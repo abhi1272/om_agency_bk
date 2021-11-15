@@ -10,10 +10,10 @@ module.exports.setRouter = (app) => {
 
     app.post(`${baseUrl}/add`,auth, payment.create);
 
-    app.get(`${baseUrl}`,payment.getAllPayment);
+    app.get(`${baseUrl}`,auth, payment.getAllPayment);
 
-    app.patch(`${baseUrl}/:id`,payment.updatePayment);
+    app.patch(`${baseUrl}/:id`,auth, payment.updatePayment);
 
-    app.delete(`${baseUrl}/:id`,payment.deletePayment);
+    app.delete(`${baseUrl}/:id`,auth, payment.deletePayment);
     
 };
