@@ -126,7 +126,7 @@ function createPaymentObj(paid_amount,bill={},payment_date,adjustable_left_amoun
 
 let getAllPayment = async (req,res) => {
     const paymentResponse = {
-        paymentData : [],
+        data : [],
         totalAmount:0
     }
     let filter = {}
@@ -148,7 +148,9 @@ let getAllPayment = async (req,res) => {
         const total = result.reduce((total, item) => {
             return total + item.paid_amount
         }, 0) 
-        res.send(result)
+        paymentResponse.data = result
+        paymentResponse.totalAmount = total
+        res.send(paymentResponse)
     }catch(e){
         res.send(e);
     }

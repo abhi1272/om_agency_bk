@@ -12,7 +12,7 @@ module.exports.setRouter = (app) => {
 
     app.get(`${baseUrl}`,customer.readModelByFilter);
 
-    app.put(`${baseUrl}/:id`,customer.updateModel);
+    app.patch(`${baseUrl}/:id`,customer.updateModel);
 
     app.delete(`${baseUrl}/:id`,customer.deleteModel);
     

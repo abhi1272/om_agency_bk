@@ -8,6 +8,9 @@ const CustomerSchema = mongoose.Schema({
       type:String,
       required:true
     },
+    area: {
+      type:String
+    },
     uniqueName: {
       type:String
     },

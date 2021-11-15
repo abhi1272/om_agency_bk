@@ -30,7 +30,8 @@ let create = async (req,res) => {
         res.send(newBill);
 
     }catch(e){
-        res.status('500').send(e);
+        console.log(e)
+        res.status('500').send(JSON.stringify(e));
     }
 };
 
