@@ -1,6 +1,6 @@
 const PaymentModel = require("../models/Payment");
 const BillModel = require("../models/Bill");
-const ExpenseModel = require("../models/Expense");
+const ExpenseModel = require("../models/Bill");
 const helper = require("../_helper/helper")
 const moment = require("moment");
 
@@ -93,10 +93,9 @@ let getDailyData = async (req, res) => {
         if (err) throw err;
         bills.map((bill) => {
           paymentArr.map((payment) => {
-            if (
-              moment(bill.bill_date).format("YYYY-MM-DD") ==
-              moment(payment.payment_date).format("YYYY-MM-DD")
-            ) {
+            if ( moment(bill.bill_date).format("YYYY-MM-DD") == 
+            moment(payment.payment_date).format("YYYY-MM-DD")) 
+            {
               payment.totalBillAmount = bill.totalBillAmount;
             }
           });
