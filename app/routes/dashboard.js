@@ -13,5 +13,6 @@ module.exports.setRouter = (app) => {
 
     app.get(`${baseUrl}/total`,auth ,dashboard.total);
 
+    app.get(`${baseUrl}/area/data`,auth ,dashboard.getDataByPlace);
 
 };

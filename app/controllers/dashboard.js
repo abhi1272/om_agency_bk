@@ -373,8 +373,56 @@ const paymentResult = await PaymentModel.aggregate([
   res.send(responseObj)
 };
 
+let getDataByPlace = async (req, res) => {
+  try {
+    const placeRespectiveData = {
+      billData : [],
+      paymentData: []
+    }
+
+    const billData = await BillModel.aggregate(
+      [
+        {
+          $group:
+            {
+              _id: '$customer.place.name' ,
+              value: { $sum: '$bill_amount' },
+            }
+        }
+      ]
+   )
+
+   const paymentData = await PaymentModel.aggregate(
+    [
+      {
+        $group:
+          {
+            _id:'$customer.place.name',
+            value: { $sum: '$paid_amount' },
+          }
+      }
+    ]
+ )
+  placeRespectiveData.billData = billData.map(({ _id: name, ...rest }) => ({
+    name,
+    ...rest,
+  }));
+  placeRespectiveData.paymentData = paymentData.map(({ _id: name, ...rest }) => ({
+    name,
+    ...rest,
+  }));
+   console.log('billData', placeRespectiveData)
+   res.send(placeRespectiveData)
+  }catch(error){
+    res.send(error)
+  }
+
+
+}
+
 module.exports = {
   getDailyData,
   total,
-  getMonthlyData
+  getMonthlyData,
+  getDataByPlace
 };
