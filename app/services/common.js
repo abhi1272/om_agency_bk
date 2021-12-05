@@ -1,10 +1,8 @@
 const appConfig = require('../../config/appConfig')
 const Model = require('../../config/models')
 
-
-
 const getDataWithFilter = async (req, field, sortField) => {
-    console.log('hello')
+    console.log('----hello-----', req.query.type)
   try {
     const responseObj = {
       data: [],
@@ -12,7 +10,7 @@ const getDataWithFilter = async (req, field, sortField) => {
       totalAmount: 0,
     };
     let filterObj = {};
-    let limitSize = 100;
+    let limitSize = 10000;
     let key 
     let value
     if (Object.keys(req.query).length > 0) {
@@ -28,6 +26,9 @@ const getDataWithFilter = async (req, field, sortField) => {
     }
     filterObj.orgId = req.loggedInUser.orgId
 
+    if(req.query.type){
+      filterObj['customer.type'] = req.query.type
+    }
     console.log('model', appConfig.model)
   
     const result = await Model[appConfig.model].find(filterObj).limit(limitSize).sort({[sortField] : -1})

@@ -141,7 +141,9 @@ let getAllPayment = async (req,res) => {
     }else if (req.query.payment_date) {
         filter = { payment_date: new Date(req.query.payment_date) }
     }
-
+    if(req.query.type){
+        filter['customer.type'] = req.query.type
+    }
     try{
 
         const result = await PaymentModel.find(filter)

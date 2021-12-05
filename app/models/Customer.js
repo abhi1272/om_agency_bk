@@ -25,11 +25,10 @@ const CustomerSchema = mongoose.Schema({
         type: String
       },
     type:{
-      type:Number
+      type:String
     },
     customer_type:{
       type:String,
-      default:'Customer'
     },
     phoneNumber:{
       type :Number

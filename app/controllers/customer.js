@@ -34,25 +34,12 @@ let readModelByFilter = async (req, res) => {
     let page_size = 1000
     let skip_records = 0
     let query = {active: true}
-    let queryData = url.parse(req.url, true).query;
-    if(queryData.paql){
-        const fetchedQuery = JSON.parse(queryData.paql)
-        console.log(fetchedQuery)
-        if(fetchedQuery.pagination && Object.keys(fetchedQuery.pagination).includes('page_size') && fetchedQuery.pagination.page_size){
-            page_size = fetchedQuery.pagination.page_size
-        }
-        if(fetchedQuery.pagination && Object.keys(fetchedQuery.pagination).includes('page_num') && fetchedQuery.pagination.page_num > 1){
-            console.log(fetchedQuery.pagination.page_num)
-            skip_records =  (page_size - skip_records) * (+fetchedQuery.pagination.page_num - 1)
-        }
-        if(fetchedQuery.filters && fetchedQuery.filters.length > 0){
-            fetchedQuery.filters.map((filter) => {
-                console.log(filter.value)
-                query[filter.name] = { $regex: filter.value, $options: 'i'}
-            })
-        }
+    if(req.url.includes('company')){
+        query.type = 'Purchase'
+    }else{
+        query.type = 'Sale'
     }
-
+    
     const count = await Customer.countDocuments()
     console.log('model', appConfig.model)
     Customer.find(query).limit(+page_size).skip(skip_records)
