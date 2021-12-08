@@ -1,7 +1,7 @@
 const appConfig = require('../../config/appConfig')
 const Model = require('../../config/models')
 
-const getDataWithFilter = async (req, field, sortField) => {
+const getDataWithFilter = async (req, field, sortField, model) => {
     console.log('----hello-----', req.query.type)
   try {
     const responseObj = {
@@ -19,7 +19,7 @@ const getDataWithFilter = async (req, field, sortField) => {
       if (req.query.bill_date) {
         filterObj = { [key]: new Date(req.query.bill_date) };
         limitSize = 0;
-      } else {
+      } else if(key !== 'type'){
         filterObj = { [key]: [value] };
         limitSize = 0;
       }
@@ -29,9 +29,9 @@ const getDataWithFilter = async (req, field, sortField) => {
     if(req.query.type){
       filterObj['customer.type'] = req.query.type
     }
-    console.log('model', appConfig.model)
+    console.log('model', model)
   
-    const result = await Model[appConfig.model].find(filterObj).limit(limitSize).sort({[sortField] : -1})
+    const result = await Model[model].find(filterObj).limit(limitSize).sort({[sortField] : -1})
     if (result) {
       responseObj.data = result;
       responseObj.count = result.length;

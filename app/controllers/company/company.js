@@ -1,9 +1,8 @@
-const logger = require('../libs/loggerLib');
-const check = require('../libs/checkLib');
-const response = require('../libs/responseLib');
-const Customer = require('../models/Customer')
-const url = require('url');
-const appConfig = require('../../config/appConfig')
+const logger = require('../../libs/loggerLib');
+const check = require('../../libs/checkLib');
+const response = require('../../libs/responseLib');
+const Company = require('../../models/Company')
+const appConfig = require('../../../config/appConfig')
 const { v4: uuidv4 } = require("uuid");
 
 
@@ -11,7 +10,7 @@ let readModel = async (req, res) => {
 
     console.log(req.params, appConfig.model)
 
-    Customer.find({uuid:req.params.id})
+    Company.find({uuid:req.params.id})
         .exec((err, result) => {
             if (err) {
                 console.log('error', err)
@@ -34,15 +33,9 @@ let readModelByFilter = async (req, res) => {
     let page_size = 1000
     let skip_records = 0
     let query = {active: true}
-    if(req.url.includes('company')){
-        query.type = 'Purchase'
-    }else{
-        query.type = 'Sale'
-    }
-    
-    const count = await Customer.countDocuments()
-    console.log('model', appConfig.model)
-    Customer.find(query).limit(+page_size).skip(skip_records)
+
+    const count = await Company.countDocuments()
+    Company.find(query).limit(+page_size).skip(skip_records)
         .exec((err, result) => {
             if (err) {
                 console.log('error', err)
@@ -55,45 +48,22 @@ let readModelByFilter = async (req, res) => {
             } else {
                 let apiResponse = response.generate(false, `${appConfig.model} found`, 200, result);
                 apiResponse.total = count
-                apiResponse.paths = Customer.schema.paths
+                apiResponse.paths = Company.schema.paths
                 res.send(apiResponse);
             }
         }
         );
 };
 
-
-
-// let readAllModel = (req, res) => {
-
-//     Customer.find({})
-//         .exec((err, result) => {
-//             if (err) {
-//                 logger.captureError('some error occured', 'productController : getProduct', 10);
-//                 let apiResponse = response.generate(true, 'some error occured', 400, err);
-//                 res.send(apiResponse);
-//             } else if (check.isEmpty(result)) {
-//                 let apiResponse = response.generate(true, `${appConfig.model} not found`, 500, null);
-//                 res.send(apiResponse);
-//             } else {
-//                 let apiResponse = response.generate(false, `${appConfig.model} found`, 200, result);
-//                 res.send(apiResponse);
-//             }
-//         }
-//         );
-// };
-
-
-
 let createModel = (req, res) => {
 
-    let Product = Customer({
+    let company = Company({
         ...req.body,
         orgId:req.loggedInUser.orgId,
         uuid:uuidv4()
     });
 
-    Product.save((err, result) => {
+    company.save((err, result) => {
         if (err) {
             console.log('err', err)
             // logger.captureError('some error occured', 'productController : addProduct', 10);
@@ -112,7 +82,7 @@ let createModel = (req, res) => {
 let updateModel = (req, res) => {
 
     let options = req.body;
-    Customer.updateOne({ uuid: req.params.id},options,(err, result) => {
+    Company.updateOne({ uuid: req.params.id},options,(err, result) => {
         if (err) {
             logger.captureError('some error occured', 'productController: editProduct');
             let apiResponse = response.generate(true, 'some error occured', 400, err);
@@ -131,7 +101,7 @@ let updateModel = (req, res) => {
 
 let deleteModel = (req,res) =>{
 
-    Customer.deleteOne({uuid:req.params.id},(err,result)=>{
+    Company.deleteOne({uuid:req.params.id},(err,result)=>{
         if(err){
             logger.captureError('error occured','productController : deleteProduct',10);
             res.send(err);

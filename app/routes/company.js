@@ -1,20 +1,21 @@
-const appConfig = require("./../../config/appConfig");
-const auth = require('../middleware/auth')
-const customer = require('../controllers/customer')
+const company = require("../controllers/company/company");
+const appConfig = require("../../config/appConfig");
+const auth = require("../middleware/auth");
+
 
 module.exports.setRouter = (app) => { 
 
     let baseUrl = `${appConfig.apiVersion}/company`;
 
-    app.post(`${baseUrl}/add`,customer.createModel);
+    app.post(`${baseUrl}/add`,auth ,company.createModel);
 
-    app.get(`${baseUrl}/:id`,customer.readModel);
+    app.get(`${baseUrl}/:id`,auth, company.readModel);
 
-    app.get(`${baseUrl}`,customer.readModelByFilter);
+    app.get(`${baseUrl}`,auth ,company.readModelByFilter);
 
-    app.patch(`${baseUrl}/:id`,customer.updateModel);
+    app.patch(`${baseUrl}/:id`,auth ,company.updateModel);
 
-    app.delete(`${baseUrl}/:id`,customer.deleteModel);
+    app.delete(`${baseUrl}/:id`,auth ,company.deleteModel);
     
 };
 

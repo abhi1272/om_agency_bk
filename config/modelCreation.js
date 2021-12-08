@@ -2,6 +2,7 @@ const fs = require('fs')
 const util = require('util')
 const appConfig = require('./appConfig')
 const designService = require('../app/services/designCreation')
+const filePath = '../app/models'
 
 module.exports.setRouter = async (app) => {
 
@@ -11,25 +12,29 @@ module.exports.setRouter = async (app) => {
         let modelObj = req.body.modifiedModelObj
         let lowerCaseModel = model.toLowerCase()
         let upperCaseModel = model.slice(0, 1).toUpperCase() + model.slice(1);
+        
+        fs.writeFileSync(`../app/models/${upperCaseModel}.js`, "const mongoose = require('mongoose');\n");
+        fs.appendFileSync(`../app/models/${upperCaseModel}.js`, `const ${model}Schema = new mongoose.Schema(${util.inspect(modelObj)});\n`, 'utf-8');
+        fs.appendFileSync(`../app/models/${upperCaseModel}.js`, `module.exports = mongoose.model('${upperCaseModel}',${model}Schema);\n`);
 
-        fs.writeFileSync(`/app/models/${upperCaseModel}.js`, "const mongoose = require('mongoose');\n");
-        fs.appendFileSync(`/app/models/${upperCaseModel}.js`, `const ${model}Schema = new mongoose.Schema(${util.inspect(modelObj)});\n`, 'utf-8');
-        fs.appendFileSync(`/app/models/${upperCaseModel}.js`, `module.exports = mongoose.model('${upperCaseModel}',${model}Schema);\n`);
-
-
-        fs.readFile(`/app/models/${upperCaseModel}.js`, 'utf8', function (err, data) {
-            if (err) {
-                return console.log(err);
-            }
-
-            var result = data.replace(/'String'/gi, 'String');
-            var result = result.replace(/'Number'/gi, 'Number');
-            var result = result.replace(/'Buffer'/gi, 'Buffer');
-
-            fs.writeFile(`/app/models/${upperCaseModel}.js`, result, 'utf8', function (err) {
-                if (err) return console.log(err);
+        try {
+            fs.readFile(`/app/models/${upperCaseModel}.js`, 'utf8', function (err, data) {
+                if (err) {
+                    return console.log('err', err);
+                }
+    
+                var result = data.replace(/'String'/gi, 'String');
+                var result = result.replace(/'Number'/gi, 'Number');
+                var result = result.replace(/'Buffer'/gi, 'Buffer');
+    
+                fs.writeFile(`/app/models/${upperCaseModel}.js`, result, 'utf8', function (err) {
+                    if (err) return console.log(err);
+                });
             });
-        });
+        }catch(err){
+            console('----error----', err)
+        }
+
 
 
         fs.readFile(`/app/routes/place.js`, 'utf8', function (err, data) {

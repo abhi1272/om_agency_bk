@@ -1,7 +1,8 @@
-const Bill = require('../models/Bill');
-const Customer = require('../models/Customer');
+const Bill = require('../../models/CompanyBill');
+const Company = require('../../models/Company');
 const _  = require('lodash');
-const common = require('../services/common.js')
+const common = require('../../services/common.js')
+const moment = require('moment');
 const { uuid } = require('uuidv4');
 
 let create = async (req,res) => {
@@ -13,19 +14,20 @@ let create = async (req,res) => {
     });
 
     try{
-        const foundCustomer = await Customer.findOne({uuid:newBill.customer_uuid})
+        const foundCompany = await Company.findOne({uuid:newBill.company_uuid})
 
-        newBill.customer = {
-            name: foundCustomer.name,
-            area: foundCustomer.area,
-            uuid: foundCustomer.uuid,
-            place:foundCustomer.place,
-            type: foundCustomer.type || ''
+        const due_date = moment(req.body.trDate).add(foundCompany.dueDays, 'days').format('YYYY-MM-DD')
+        newBill.due_date = due_date
+
+        newBill.company = {
+            name: foundCompany.name,
+            area: foundCompany.area,
+            uuid: foundCompany.uuid,
         }
 
         await newBill.save();
         
-        await Customer.updateOne({uuid:newBill.customer_uuid}, {$inc: {totalBillAmount: +newBill.bill_amount}})
+        await Company.updateOne({uuid:newBill.company_uuid}, {$inc: {totalBillAmount: +newBill.bill_amount}})
 
         res.send(newBill);
 
@@ -37,7 +39,7 @@ let create = async (req,res) => {
 
 let getAllBills = async (req,res) => {
   
-    const result = await common.getDataWithFilter(req,'bill_amount', 'bill_date', 'Bill')
+    const result = await common.getDataWithFilter(req,'bill_amount', 'bill_date', 'CompanyBill')
     res.send(result)
        
 };
@@ -45,10 +47,10 @@ let getAllBills = async (req,res) => {
 
 let getBillsByCustomer = async (req,res) => {
 
-    let uuid = req.params.customer_uuid;
+    let uuid = req.params.company_uuid;
 
     try{
-        let bills = await Bill.find({['customer_uuid']:uuid}).sort({bill_date:-1})
+        let bills = await Bill.find({['company_uuid']:uuid}).sort({bill_date:-1})
         res.send(bills);
     }catch(e){
         res.status('500').send(e);
@@ -80,12 +82,19 @@ let updateBill =  async (req,res) => {
 
         if(!foundBill) return 
 
+
+        const foundCustomer = await Company.findOne({uuid:foundBill.company_uuid})
+
+        const due_date = moment(bill.trDate).add(foundCustomer.dueDays, 'days').format('YYYY-MM-DD')
+
         const result = await Bill.updateOne(
             { uuid: req.params.id },
             {
               $set: {
                   bill_amount: bill.bill_amount || foundBill.bill_amount,
                   bill_date: bill.bill_date || foundBill.bill_date,
+                  trDate: bill.trDate || foundBill.trDate,
+                  due_date:due_date || foundBill.due_date,
                   bill_no : bill.bill_no || foundBill.bill_no,
                   amount_left: bill.amount_left || foundBill.amount_left
               },
@@ -93,7 +102,6 @@ let updateBill =  async (req,res) => {
           );
 
         
-        const foundCustomer = await Customer.findOne({uuid:foundBill.customer_uuid})
         
         let totalBillAmount = foundCustomer.totalBillAmount
 
@@ -103,7 +111,7 @@ let updateBill =  async (req,res) => {
             totalBillAmount = foundCustomer.totalBillAmount - (foundBill.bill_amount -  bill.bill_amount)
         }
 
-        await Customer.updateOne({uuid:foundBill.customer_uuid}, {$set:{totalBillAmount}})
+        await Company.updateOne({uuid:foundBill.company_uuid}, {$set:{totalBillAmount}})
 
         res.send(result);
 
@@ -124,7 +132,7 @@ let deleteBill = async (req,res) => {
 
         const result = await Bill.deleteOne({ uuid });
 
-        await Customer.updateOne({uuid:foundBill.customer_uuid}, {$inc: {totalBillAmount: -foundBill.bill_amount}})
+        await Company.updateOne({uuid:foundBill.company_uuid}, {$inc: {totalBillAmount: -foundBill.bill_amount}})
 
         res.send(result);
     }catch(e){
