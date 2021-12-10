@@ -1,5 +1,6 @@
 const fs = require('fs')
 const util = require('util')
+const path = require('path')
 const designService = require('../services/designCreation')
 
 const tableCreation = async (req, res) => {
@@ -9,13 +10,17 @@ const tableCreation = async (req, res) => {
     let modelObj = req.body.modifiedModelObj
     let lowerCaseModel = model.toLowerCase()
     let upperCaseModel = model.slice(0, 1).toUpperCase() + model.slice(1);
-    
-    fs.writeFileSync(`/app/models/${upperCaseModel}.js`, "const mongoose = require('mongoose');\n");
-    fs.appendFileSync(`/app/models/${upperCaseModel}.js`, `const ${model}Schema = new mongoose.Schema(${util.inspect(modelObj)});\n`, 'utf-8');
-    fs.appendFileSync(`/app/models/${upperCaseModel}.js`, `module.exports = mongoose.model('${upperCaseModel}',${model}Schema);\n`);
+
+    let baseDir = path.join(__dirname, '../')
+    let configPath = path.join(__dirname, '../../')
+
+    console.log('baseDir',baseDir, configPath)
+    fs.writeFileSync(`${baseDir}/models/${upperCaseModel}.js`, "const mongoose = require('mongoose');\n");
+    fs.appendFileSync(`${baseDir}/models/${upperCaseModel}.js`, `const ${model}Schema = new mongoose.Schema(${util.inspect(modelObj)});\n`, 'utf-8');
+    fs.appendFileSync(`${baseDir}/models/${upperCaseModel}.js`, `module.exports = mongoose.model('${upperCaseModel}',${model}Schema);\n`);
 
     try {
-        fs.readFile(`/app/models/${upperCaseModel}.js`, 'utf8', function (err, data) {
+        fs.readFile(`${baseDir}/models/${upperCaseModel}.js`, 'utf8', function (err, data) {
             if (err) {
                 return console.log('err', err);
             }
@@ -24,7 +29,7 @@ const tableCreation = async (req, res) => {
             var result = result.replace(/'Number'/gi, 'Number');
             var result = result.replace(/'Buffer'/gi, 'Buffer');
 
-            fs.writeFile(`/app/models/${upperCaseModel}.js`, result, 'utf8', function (err) {
+            fs.writeFile(`${baseDir}/models/${upperCaseModel}.js`, result, 'utf8', function (err) {
                 if (err) return console.log(err);
             });
         });
@@ -34,24 +39,24 @@ const tableCreation = async (req, res) => {
 
 
 
-    fs.readFile(`/app/routes/place.js`, 'utf8', function (err, data) {
+    fs.readFile(`${baseDir}/routes/place.js`, 'utf8', function (err, data) {
         if (err) {
             return console.log(err);
         }
         console.log('model name', model)
         var result = data.replace(/place/gi, lowerCaseModel);
 
-        fs.writeFile(`/app/routes/${lowerCaseModel}.js`, result, 'utf8', function (err) {
+        fs.writeFile(`${baseDir}/routes/${lowerCaseModel}.js`, result, 'utf8', function (err) {
             if (err) return console.log(err);
         });
 
-    fs.readFile("/config/models.js", 'utf8', function readFileCallback(err, data) {
+    fs.readFile(`${configPath}/config/models.js`, 'utf8', function readFileCallback(err, data) {
         if (err) {
           console.log(err);
         } else {
           const addData = `    ,${upperCaseModel}:require('../app/models/${upperCaseModel}')\n}`
           var result = data.replace(/[}]/g, addData);
-          fs.writeFile("/config/models.js", result, 'utf8', err => {
+          fs.writeFile(`${configPath}/config/models.js`, result, 'utf8', err => {
             if (err) throw err;
             console.log('File has been saved!');
           });
