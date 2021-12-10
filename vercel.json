@@ -8,14 +8,14 @@
     ],
     "routes": [
         {
-            "src": "/(.*)",
-            "dest": "/"
+            "src": "/tmp/(.*)",
+            "dest": "/tmp"
         }
     ],
     "rewrites": [
         {
-            "source": "/(.*)",
-            "destination": "/"
+            "source": "/tmp/(.*)",
+            "destination": "/tmp"
         }
     ]
 }
