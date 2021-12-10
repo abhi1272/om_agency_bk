@@ -1,10 +1,13 @@
 const common = require("./../../app/controllers/common");
+const tableCreationController = require("./../../app/controllers/tableCreation");
 const appConfig = require("./../../config/appConfig");
 
 
 module.exports.setRouter = (app) => { 
 
     let baseUrl = `${appConfig.apiVersion}/design`;
+
+    app.post(`${baseUrl}/table`,tableCreationController.tableCreation);
 
     app.post(`${baseUrl}/add`,common.createModel);
 
