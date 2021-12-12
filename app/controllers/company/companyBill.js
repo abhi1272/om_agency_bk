@@ -50,7 +50,7 @@ let getBillsByCustomer = async (req,res) => {
     let uuid = req.params.company_uuid;
 
     try{
-        let bills = await Bill.find({['company_uuid']:uuid}).sort({bill_date:1})
+        let bills = await Bill.find({['company_uuid']:uuid}).sort({bill_date:-1})
         res.send(bills);
     }catch(e){
         res.status('500').send(e);
