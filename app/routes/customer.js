@@ -6,15 +6,15 @@ module.exports.setRouter = (app) => {
 
     let baseUrl = `${appConfig.apiVersion}/customer`;
 
-    app.post(`${baseUrl}/add`,customer.createModel);
+    app.post(`${baseUrl}/add`,auth, customer.createModel);
 
-    app.get(`${baseUrl}/:id`,customer.readModel);
+    app.get(`${baseUrl}/:id`,auth, customer.readModel);
 
-    app.get(`${baseUrl}`,customer.readModelByFilter);
+    app.get(`${baseUrl}`,auth, customer.readModelByFilter);
 
-    app.patch(`${baseUrl}/:id`,customer.updateModel);
+    app.patch(`${baseUrl}/:id`,auth, customer.updateModel);
 
-    app.delete(`${baseUrl}/:id`,customer.deleteModel);
+    app.delete(`${baseUrl}/:id`,auth, customer.deleteModel);
     
 };
 
