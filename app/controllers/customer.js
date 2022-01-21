@@ -31,7 +31,7 @@ let readModelByFilter = async (req, res) => {
 
     let page_size = 1000
     let skip_records = 0
-    let query = {active: true}
+    let query = {active: true, orgId: req.loggedInUser.orgId}
     
     const count = await Customer.countDocuments()
     console.log('model', appConfig.model)
