@@ -1,8 +1,7 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const PlaceSchema = new mongoose.Schema([
   {
-    name: { type: String, require: true, unique: true, default: "" },
-    uuid: { type: String, require: true, unique: true}
-  },
+    name: { type: String, require: true, unique: true, default: '' }
+  }
 ]);
-module.exports = mongoose.model("Place", PlaceSchema);
+module.exports = mongoose.model('Place',PlaceSchema);

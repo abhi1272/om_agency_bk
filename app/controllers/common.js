@@ -37,6 +37,7 @@ let readModelByFilter = async (req, res) => {
     let page_size = 100
     let skip_records = 0
     let query = {}
+   
     let queryData = url.parse(req.url, true).query;
     if(queryData.paql){
         const fetchedQuery = JSON.parse(queryData.paql)
@@ -57,6 +58,9 @@ let readModelByFilter = async (req, res) => {
         }
     }else{
         query = queryData
+    }
+    if(req.loggedInUser && req.loggedInUser.orgId){
+        query = {orgId : req.loggedInUser.orgId}
     }
 
     const count = await Model[appConfig.model].countDocuments()
@@ -108,6 +112,7 @@ let createModel = (req, res) => {
 
     let Product = Model[appConfig.model]({
         ...req.body,
+        orgId:req.loggedInUser.orgId,
         uuid:uuidv4()
     });
 

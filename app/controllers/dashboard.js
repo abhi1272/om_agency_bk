@@ -382,29 +382,29 @@ let getDataByPlace = async (req, res) => {
       paymentData: []
     }
 
-    const billData = await BillModel.aggregate(
-      [
-        {
-          $group:
-            {
-              _id: '$customer.place.name' ,
-              value: { $sum: '$bill_amount' },
-            }
-        }
-      ]
-   )
-
-   const paymentData = await PaymentModel.aggregate(
-    [
+    const billData = await BillModel.aggregate([
       {
-        $group:
-          {
-            _id:'$customer.place.name',
-            value: { $sum: '$paid_amount' },
-          }
-      }
-    ]
- )
+        $match: { orgId: req.loggedInUser.orgId },
+      },
+      {
+        $group: {
+          _id: "$customer.place.name",
+          value: { $sum: "$bill_amount" },
+        },
+      },
+    ]);
+
+   const paymentData = await PaymentModel.aggregate([
+     {
+       $match: { orgId: req.loggedInUser.orgId },
+     },
+     {
+       $group: {
+         _id: "$customer.place.name",
+         value: { $sum: "$paid_amount" },
+       },
+     },
+   ]);
   placeRespectiveData.billData = billData.map(({ _id: name, ...rest }) => ({
     name,
     ...rest,

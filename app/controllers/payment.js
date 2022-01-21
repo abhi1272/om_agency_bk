@@ -163,7 +163,7 @@ let getAllPayment = async (req,res) => {
         filter['customer.type'] = req.query.type
     }
     try{
-
+        filter.orgId = req.loggedInUser.orgId
         const result = await PaymentModel.find(filter)
         const total = result.reduce((total, item) => {
             return total + item.paid_amount

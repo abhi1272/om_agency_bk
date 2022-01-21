@@ -1,17 +1,20 @@
 const common = require("./../../app/controllers/common");
 const appConfig = require("./../../config/appConfig");
+const auth = require("../middleware/auth");
 
 
 module.exports.setRouter = (app) => { 
 
     let baseUrl = `${appConfig.apiVersion}/place`;
 
-    app.post(`${baseUrl}/add`,common.createModel);
+    app.post(`${baseUrl}/add`,auth, common.createModel);
 
-    app.get(`${baseUrl}`,common.readModelByFilter);
+    app.get(`${baseUrl}`,auth, common.readModelByFilter);
 
-    app.patch(`${baseUrl}/:id`,common.updateModel);
+    app.get(`${baseUrl}/:id`,auth, common.readModel);
 
-    app.delete(`${baseUrl}/:id`,common.deleteModel);
+    app.patch(`${baseUrl}/:id`,auth, common.updateModel);
+
+    app.delete(`${baseUrl}/:id`,auth, common.deleteModel);
     
 };
