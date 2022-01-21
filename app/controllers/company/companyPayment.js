@@ -1,6 +1,6 @@
 const Company = require('../../models/Company');
 const PaymentModel = require('../../models/CompanyPayment')
-const _ = require('lodash');
+const response = require('../../libs/responseLib');
 const { uuid } = require('uuidv4');
 const Bill = require('../../models/CompanyBill');
 
@@ -9,39 +9,82 @@ let create =  async (req, res) => {
     let paid_amount = +req.body.paid_amount
     const orgId = req.loggedInUser.orgId
 
-    if(req.body.credit_note){
-        paid_amount = paid_amount + +req.body.credit_note
-    }
-    if(req.body.debit_note){
-        paid_amount = paid_amount - +req.body.debit_note
-    }
-
-    let foundBill = await Bill.find({uuid: req.body.bill_uuid, amount_left:{$ne:0}}).sort({bill_date:1})
-
-    if(foundBill)  { foundBill = foundBill[0] }
-
-    const company_uuid = foundBill.company.uuid
-
-    const adjustable_left_amount = foundBill.bill_amount - paid_amount
-    await Bill.findOneAndUpdate({uuid:foundBill.uuid},{ $set: { amount_left: adjustable_left_amount } })
-
-    const paymentValueObj = createPaymentObj(req.body.paid_amount, foundBill, req.body.payment_date, adjustable_left_amount, orgId,req)
+    try {
+        if(req.body.credit_note){
+            paid_amount = paid_amount + +req.body.credit_note
+        }
+        if(req.body.debit_note){
+            paid_amount = paid_amount - +req.body.debit_note
+        }
     
+        let foundBill = await Bill.find({uuid: req.body.bill_uuid, amount_left:{$ne:0}}).sort({bill_date:1})
     
-    const Payment = new PaymentModel({
-        ...paymentValueObj
-    })
-
-    Payment.save()
-    const updateResult = await Company.updateOne({uuid:[company_uuid]},{ $inc: { totalPaymentAmount: paid_amount} })
-    await Bill.updateOne({uuid:foundBill.uuid},{ $push: { payments: paymentValueObj } })
-
-
-    res.send(updateResult)
+        if(foundBill)  { foundBill = foundBill[0] }
+    
+        const company_uuid = foundBill.company.uuid
+    
+        const adjustable_left_amount = foundBill.bill_amount - paid_amount
+        await Bill.findOneAndUpdate({uuid:foundBill.uuid},{ $set: { amount_left: adjustable_left_amount } })
+    
+        const paymentValueObj = createPaymentObj(req.body.paid_amount, foundBill, req.body.payment_date, adjustable_left_amount, orgId,req)
+        
+        
+        const Payment = new PaymentModel({
+            ...paymentValueObj
+        })
+    
+        Payment.save()
+        const updateResult = await Company.updateOne({uuid:[company_uuid]},{ $inc: { totalPaymentAmount: paid_amount} })
+        await Bill.updateOne({uuid:foundBill.uuid},{ $push: { payments: paymentValueObj } })
+    
+        let apiResponse = response.generate(false, 'Payment added successfully', 200, updateResult);
+        res.send(apiResponse);
+    }catch(e){
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
+    }
+  
 
 }
 
+let createPayment =  async (req, res) => {
+    let paid_amount = +req.body.paid_amount
+    const orgId = req.loggedInUser.orgId
 
+    try {
+        if(req.body.credit_note){
+            paid_amount = paid_amount + +req.body.credit_note
+        }
+        if(req.body.debit_note){
+            paid_amount = paid_amount - +req.body.debit_note
+        }
+    
+        const foundCompany = await Company.findOne({uuid:req.body.company_uuid})
+
+        const Payment = new PaymentModel({
+            uuid:uuid(),
+            ...req.body,
+            paid_amount: parseInt(paid_amount),
+            company_uuid:foundCompany.uuid,
+            company:{
+                name: foundCompany.name,
+                area: foundCompany.area,
+                uuid: foundCompany.uuid,
+            },
+            orgId
+        })
+    
+        Payment.save()
+        const updateResult = await Company.updateOne({uuid:req.body.company_uuid},{ $inc: { totalPaymentAmount: paid_amount} })    
+        let apiResponse = response.generate(false, 'Payment added successfully', 200, updateResult);
+        res.send(apiResponse);
+    }catch(e){
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
+    }
+  
+
+}
 
 function createPaymentObj(paid_amount,bill={},payment_date,adjustable_left_amount=0,orgId,req){
     const paymentObj  = {
@@ -67,10 +110,7 @@ function createPaymentObj(paid_amount,bill={},payment_date,adjustable_left_amoun
 
 
 let getAllPayment = async (req,res) => {
-    const paymentResponse = {
-        data : [],
-        totalAmount:0
-    }
+
     let filter = {}
     let projection = {}
 
@@ -90,11 +130,12 @@ let getAllPayment = async (req,res) => {
         const total = result.reduce((total, item) => {
             return total + item.paid_amount
         }, 0) 
-        paymentResponse.data = result
-        paymentResponse.totalAmount = total
-        res.send(paymentResponse)
+
+        let apiResponse = response.generate(false, 'Payment Found', 200, result, total);
+        res.send(apiResponse);
     }catch(e){
-        res.send(e);
+         let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse)
     }
    
 };
@@ -134,11 +175,12 @@ let updatePayment =  async (req,res) => {
         }
 
         await Company.updateOne({uuid:foundPayment.company_uuid}, {$set:{totalPaymentAmount}})
-  
-        res.send(result);
+        let apiResponse = response.generate(false, 'Payment updated successfully', 200, result);
+        res.send(apiResponse);
 
     }catch(e){
-        res.send(e);
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse)
     }
 };
 
@@ -156,14 +198,17 @@ let deletePayment = async (req,res) => {
 
         await Company.updateOne({uuid:foundPayment.company_uuid}, {$inc: {totalPaymentAmount: -foundPayment.paid_amount}})
         
-        res.send(result);
+        let apiResponse = response.generate(false, 'Payment Deleted successfully', 200, result);
+        res.send(apiResponse);
     }catch(e){
-        res.send(e);
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse)
     }
 };
 
 module.exports = {
     create,
+    createPayment,
     getAllPayment,
     updatePayment,
     deletePayment

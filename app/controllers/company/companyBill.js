@@ -28,12 +28,13 @@ let create = async (req,res) => {
         await newBill.save();
         
         await Company.updateOne({uuid:newBill.company_uuid}, {$inc: {totalBillAmount: +newBill.bill_amount}})
-
+        let apiResponse = response.generate(false, 'Bill successfully created', 200, newBill);
+        res.send(apiResponse);
         res.send(newBill);
 
     }catch(e){
-        console.log(e)
-        res.status('500').send(JSON.stringify(e));
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
     }
 };
 
@@ -51,9 +52,11 @@ let getBillsByCustomer = async (req,res) => {
 
     try{
         let bills = await Bill.find({['company_uuid']:uuid}).sort({createdAt:1})
-        res.send(bills);
+        let apiResponse = response.generate(false, `Bill found for customer id: ${uuid}`, 200, bills);
+        res.send(apiResponse);
     }catch(e){
-        res.status('500').send(e);
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
     }
 
 };
@@ -65,9 +68,11 @@ let getBill = async (req,res) => {
 
     try{
         let result = await Bill.findOne({uuid});
-        res.send(result);
+        let apiResponse = response.generate(false, `Bill found`, 200, result);
+        res.send(apiResponse);
     }catch(e){
-        res.send(e);
+         let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
     }
 };
 
@@ -113,10 +118,13 @@ let updateBill =  async (req,res) => {
 
         await Company.updateOne({uuid:foundBill.company_uuid}, {$set:{totalBillAmount}})
 
+        let apiResponse = response.generate(false, `Bill Updated Successfully`, 200, result);
+        res.send(apiResponse);
         res.send(result);
 
     }catch(e){
-        res.send(e);
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
     }
 };
 
@@ -134,9 +142,11 @@ let deleteBill = async (req,res) => {
 
         await Company.updateOne({uuid:foundBill.company_uuid}, {$inc: {totalBillAmount: -foundBill.bill_amount}})
 
-        res.send(result);
+        let apiResponse = response.generate(false, `Bill Deleted Successfully`, 200, result);
+        res.send(apiResponse);
     }catch(e){
-        res.send(e);
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
     }
 };
 

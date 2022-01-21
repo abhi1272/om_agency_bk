@@ -105,6 +105,8 @@ let getDailyData = async (req, res) => {
         responseObj.data = paymentArr
         responseObj.count = paymentArr.length
         paymentArr.map((item) => {
+          item.totalPaymentAmount = item.totalPaymentAmount ? item.totalPaymentAmount : 0
+          item.totalBillAmount = item.totalBillAmount ? item.totalBillAmount : 0
           responseObj.totalPaymentSum += item.totalPaymentAmount ? item.totalPaymentAmount : 0
           responseObj.totalBillSum += item.totalBillAmount ? item.totalBillAmount : 0
         })

@@ -19,7 +19,7 @@ const uploadProduct = async (req,res) =>{
     
     await Product.save((err,result) => {
         if (err) {
-            logger.captureError('some error occured', 'productController : addProduct', 10);
+            logger.error('some error occured', 'productController : addProduct', 10);
             let apiResponse = response.generate(true, 'some error occured', 400, err);
             res.send(apiResponse);
         } else {

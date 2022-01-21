@@ -3,7 +3,7 @@ const logger = require('pino')()
 const moment = require('moment')
 
 // myErrorFunction is a definition of how the errors will be formatted in our system
-let captureError = (errorMessage, errorOrigin, errorLevel) => {
+let error = (errorMessage, errorOrigin, errorLevel) => {
   let currentTime = moment()
 
   let errorResponse = {
@@ -15,7 +15,7 @@ let captureError = (errorMessage, errorOrigin, errorLevel) => {
 
   logger.error(errorResponse)
   return errorResponse
-} // end captureError
+} // end error
 
 let captureInfo = (message, origin, importance) => {
   let currentTime = moment()
@@ -32,6 +32,6 @@ let captureInfo = (message, origin, importance) => {
 } // end infoCapture
 
 module.exports = {
-  error: captureError,
+  error: error,
   info: captureInfo
 }

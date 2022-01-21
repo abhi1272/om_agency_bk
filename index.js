@@ -48,7 +48,6 @@ fs.readdirSync(modelsPath).forEach(function (file) {
 // Bootstrap route
 fs.readdirSync(routesPath).forEach(function (file) {
   if (~file.indexOf('.js')) {
-    console.log(routesPath, file)
     require(routesPath + '/' + file).setRouter(app)
   }
 });
@@ -71,7 +70,6 @@ app.use(globalErrorMiddleware.globalNotFoundHandler);
 
 const server = http.createServer(app);
 // start listening to http server
-console.log(appConfig);
 server.listen(appConfig.port);
 server.on('error', onError);
 server.on('listening', onListening);
@@ -117,7 +115,6 @@ function onListening() {
     : 'port ' + addr.port;
   ('Listening on ' + bind);
   logger.info('server listening on port' + addr.port, 'serverOnListeningHandler', 10);
-  console.log(appConfig.db.uri)
   let db = mongoose.connect(appConfig.db.uri,{ useNewUrlParser:true ,useCreateIndex:true});
 }
 

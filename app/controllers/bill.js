@@ -1,6 +1,6 @@
 const Bill = require('../models/Bill');
 const Customer = require('../models/Customer');
-const _  = require('lodash');
+const response = require('../libs/responseLib');
 const common = require('../services/common.js')
 const { uuid } = require('uuidv4');
 
@@ -26,17 +26,17 @@ let create = async (req,res) => {
         await newBill.save();
         
         await Customer.updateOne({uuid:newBill.customer_uuid}, {$inc: {totalBillAmount: +newBill.bill_amount}})
-
-        res.send(newBill);
+        let apiResponse = response.generate(false, 'Bill successfully created', 200, newBill);
+        res.send(apiResponse);
 
     }catch(e){
-        console.log(e)
-        res.status('500').send(JSON.stringify(e));
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
     }
 };
 
 let getAllBills = async (req,res) => {
-  
+    
     const result = await common.getDataWithFilter(req,'bill_amount', 'bill_date', 'Bill')
     res.send(result)
        
@@ -49,9 +49,11 @@ let getBillsByCustomer = async (req,res) => {
 
     try{
         let bills = await Bill.find({['customer_uuid']:uuid}).sort({bill_date:-1})
-        res.send(bills);
+        let apiResponse = response.generate(false, `Bill found for customer id: ${uuid}`, 200, bills);
+        res.send(apiResponse);
     }catch(e){
-        res.status('500').send(e);
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
     }
 
 };
@@ -63,9 +65,11 @@ let getBill = async (req,res) => {
 
     try{
         let result = await Bill.findOne({uuid});
-        res.send(result);
+        let apiResponse = response.generate(false, `Bill found`, 200, result);
+        res.send(apiResponse);
     }catch(e){
-        res.send(e);
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
     }
 };
 
@@ -105,10 +109,12 @@ let updateBill =  async (req,res) => {
 
         await Customer.updateOne({uuid:foundBill.customer_uuid}, {$set:{totalBillAmount}})
 
-        res.send(result);
+        let apiResponse = response.generate(false, `Bill Updated Successfully`, 200, result);
+        res.send(apiResponse);
 
     }catch(e){
-        res.send(e);
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
     }
 };
 
@@ -126,9 +132,11 @@ let deleteBill = async (req,res) => {
 
         await Customer.updateOne({uuid:foundBill.customer_uuid}, {$inc: {totalBillAmount: -foundBill.bill_amount}})
 
-        res.send(result);
+        let apiResponse = response.generate(false, `Bill Deleted Successfully`, 200, result);
+        res.send(apiResponse);
     }catch(e){
-        res.send(e);
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
     }
 };
 
