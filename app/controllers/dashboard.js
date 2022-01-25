@@ -35,7 +35,7 @@ let getDailyData = async (req, res) => {
     };
 
     paymentQuery.orgId = req.loggedInUser.orgId || []
-    paymentQuery["customer.type"] = req.query.transaction_type
+    // paymentQuery["customer.type"] = req.query.transaction_type
 
 
     if (parsedPlaceId.length) {
@@ -51,7 +51,7 @@ let getDailyData = async (req, res) => {
     };
 
     billQuery.orgId = req.loggedInUser.orgId || []
-    billQuery["customer.type"] = req.query.transaction_type
+    // billQuery["customer.type"] = req.query.transaction_type
 
 
     if (parsedCustomerId.length) {
@@ -146,7 +146,7 @@ let total = async (req, res) => {
       {
         $match: {
           orgId: req.loggedInUser.orgId || [],
-          "customer.type" : req.query.transaction_type
+          // "customer.type" : req.query.transaction_type
         }
       },
       {
@@ -162,7 +162,7 @@ let total = async (req, res) => {
       {
         $match: {
           orgId: req.loggedInUser.orgId || [],
-          "customer.type" : req.query.transaction_type
+          // "customer.type" : req.query.transaction_type
         }
       },
       {
@@ -236,7 +236,7 @@ let getMonthlyData = async (req, res) => {
   }
 
   paymentQuery.orgId = req.loggedInUser.orgId || []
-  paymentQuery["customer.type"] = req.query.transaction_type
+  // paymentQuery["customer.type"] = req.query.transaction_type
 
 
   if(parsedCustomerId.length){
@@ -248,7 +248,7 @@ let getMonthlyData = async (req, res) => {
   }
 
   billQuery.orgId = req.loggedInUser.orgId || []
-  billQuery["customer.type"] = req.query.transaction_type
+  // billQuery["customer.type"] = req.query.transaction_type
   
 
   if(parsedCustomerId.length){

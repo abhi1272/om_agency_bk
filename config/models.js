@@ -12,6 +12,7 @@ const model = {
     Organization: require('../app/models/Organization'),
     Place: require('../app/models/Place')
     ,Expense:require('../app/models/Expense')
+    ,Place:require('../app/models/Place')
 }
 
 module.exports = model

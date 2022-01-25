@@ -43,7 +43,7 @@ let readModelByFilter = async (req, res) => {
                 let apiResponse = response.generate(true, 'some error occured', 400, err);
                 res.send(apiResponse);
             } else if (check.isEmpty(result)) {
-                let apiResponse = response.generate(true, `${appConfig.model} not found`, 500, null);
+                let apiResponse = response.generate(true, `${appConfig.model} not found`, 500, []);
                 res.send(apiResponse);
             } else {
                 let apiResponse = response.generate(false, `${appConfig.model} found`, 200, result);
