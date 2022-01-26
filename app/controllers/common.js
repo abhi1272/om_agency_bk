@@ -37,6 +37,10 @@ let readModelByFilter = async (req, res) => {
     let page_size = 100
     let skip_records = 0
     let query = {}
+
+    if(appConfig.model === 'Dashboard'){
+        appConfig.model = 'Place'
+    }
    
     let queryData = url.parse(req.url, true).query;
     if(queryData.paql){
