@@ -7,9 +7,9 @@ module.exports.setRouter = (app) => {
 
     let baseUrl = `${appConfig.apiVersion}/company-payment`;
 
-    app.post(`${baseUrl}/add`,auth, payment.create);
+    app.post(`${baseUrl}/add`,auth, payment.createPayment);
 
-    app.post(`${baseUrl}/create`,auth, payment.createPayment);
+    // app.post(`${baseUrl}/create`,auth, payment.createPayment);
 
     app.get(`${baseUrl}`,auth, payment.getAllPayment);
 
