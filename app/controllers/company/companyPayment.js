@@ -126,7 +126,7 @@ let getAllPayment = async (req,res) => {
 
     try{
         filter.orgId = req.loggedInUser.orgId
-        const result = await PaymentModel.find(filter)
+        const result = await PaymentModel.find(filter).sort({createdAt:-1})
         const total = result.reduce((total, item) => {
             return total + item.paid_amount
         }, 0) 

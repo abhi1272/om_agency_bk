@@ -31,7 +31,6 @@ let create = async (req,res) => {
         await Company.updateOne({uuid:newBill.company_uuid}, {$inc: {totalBillAmount: +newBill.bill_amount}})
         let apiResponse = response.generate(false, 'Bill successfully created', 200, newBill);
         res.send(apiResponse);
-        res.send(newBill);
 
     }catch(e){
         let apiResponse = response.generate(true, 'some error occurred', 500, e);
