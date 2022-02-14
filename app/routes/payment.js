@@ -14,6 +14,8 @@ module.exports.setRouter = (app) => {
 
     app.get(`${baseUrl}`,auth, payment.getAllPayment);
 
+    app.put(`${baseUrl}/verify`,auth, payment.verifyPayment);
+
     app.patch(`${baseUrl}/:id`,auth, payment.updatePayment);
 
     app.delete(`${baseUrl}/:id`,auth, payment.deletePayment);

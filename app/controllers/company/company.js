@@ -48,7 +48,7 @@ let readModelByFilter = async (req, res) => {
             } else {
                 let apiResponse = response.generate(false, `${appConfig.model} found`, 200, result);
                 apiResponse.total = count
-                apiResponse.paths = Company.schema.paths
+                // apiResponse.paths = Company.schema.paths
                 res.send(apiResponse);
             }
         }

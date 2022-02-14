@@ -14,6 +14,8 @@ module.exports.setRouter = (app) => {
 
     app.get(`${baseUrl}/:customer_uuid`,auth, bill.getBillsByCustomer);
 
+    app.put(`${baseUrl}/verify`,auth, bill.verifyBill);
+
     app.patch(`${baseUrl}/:id`,auth, bill.updateBill);
 
     app.delete(`${baseUrl}/:id`,auth, bill.deleteBill);

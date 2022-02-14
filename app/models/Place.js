@@ -1,7 +1,27 @@
-const mongoose = require('mongoose');
-const PlaceSchema = new mongoose.Schema([
-  {
-    name: { type: String, require: true, unique: true, default: '' }
+const mongoose = require("mongoose");
+
+let PlaceSchema = new mongoose.Schema({
+  uuid: {
+    type: String,
+    index: true,
+    trim:true
+  },
+  name: {
+    type: String,
+    default: '',
+    trim:true,
+    required:true
+  },
+  orgId:{
+    type: String,
+    required: true
+  },
+  canAccessAll:{
+    type:Boolean
   }
-]);
-module.exports = mongoose.model('Place',PlaceSchema);
+},
+{
+  timestamps:true
+}
+);
+module.exports = mongoose.model("Place", PlaceSchema);

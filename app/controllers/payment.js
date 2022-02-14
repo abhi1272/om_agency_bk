@@ -89,8 +89,6 @@ let create =  async (req, res) => {
     }
 }
 
-
-
 function createPaymentObj(paid_amount,bill={},payment_date,adjustable_left_amount=0,orgId){
     const paymentObj  = {
         uuid:uuid(),
@@ -217,6 +215,28 @@ let updatePayment =  async (req,res) => {
     }
 };
 
+let verifyPayment =  async (req,res) => {
+
+    try{
+        const payment_uuids = req.body.payment_uuids
+        
+        const result = await PaymentModel.updateMany(
+            { uuid: {$in:payment_uuids} },
+            {
+              $set: {
+                  verify: true,
+              },
+            }
+          );
+
+        let apiResponse = response.generate(false, `Payment Verified Successfully`, 200, result);
+        res.send(apiResponse);
+
+    }catch(e){
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
+    }
+};
 let deletePayment = async (req,res) => {
     
     let uuid = req.params.id;
@@ -243,5 +263,6 @@ module.exports = {
     createPayment,
     getAllPayment,
     updatePayment,
-    deletePayment
+    deletePayment,
+    verifyPayment
 };
