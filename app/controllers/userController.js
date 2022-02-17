@@ -36,16 +36,9 @@ let signUpFunction = async (req, res) => {
 
 // start of login function 
 let loginFunction = async (req, res) => {
-
-    // if(check.isEmpty(req.body.email)){
-    //     throw Error('Enter email id')
-    // }
-    // if(check.isEmpty(req.body.password)){
-    //     throw Error('Enter password...')
-    // }
-
+    
     try{
-        let user = await User.findByCredentials(req.body.email,req.body.password);
+        let user = await User.findByCredentials(req.body.email,req.body.password,req.body.orgId);
         const token = await user.generateAuthToken();
         setToken(res,user,token)
         logger.info(`You are successfully logged in ${user}','userController: login`,1);
@@ -53,7 +46,8 @@ let loginFunction = async (req, res) => {
         res.send(apiResponse);
     }
     catch(e){
-        res.status('500').send('User id or password is wrong');
+        let apiResponse = response.generate(false,'User id or password is wrong',500,e);
+        res.status('500').send(apiResponse);
         logger.error('Not able to login','userController:login',5)
         console.log(e)
     }

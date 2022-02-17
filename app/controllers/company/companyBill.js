@@ -1,6 +1,5 @@
 const Bill = require('../../models/CompanyBill');
 const Company = require('../../models/Company');
-const _  = require('lodash');
 const common = require('../../services/common.js')
 const response = require('../../libs/responseLib');
 const moment = require('moment');
@@ -33,7 +32,13 @@ let create = async (req,res) => {
         res.send(apiResponse);
 
     }catch(e){
-        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        let message = ''
+        if(e.code === 11000){
+            message = `Duplicate bill ${e.keyValue.bill_no} can not be added`
+        }else{
+            message = 'some error occurred'
+        }
+        let apiResponse = response.generate(true, message, 500, e);
         res.status('500').send(apiResponse);
     }
 };

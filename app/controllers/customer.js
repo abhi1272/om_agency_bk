@@ -32,7 +32,10 @@ let readModelByFilter = async (req, res) => {
     let page_size = 1000
     let skip_records = 0
     let query = {active: true, orgId: req.loggedInUser.orgId}
-    
+    const place_uuids = req.loggedInUser.place.map(item => item.uuid)
+    if(place_uuids && place_uuids.length){
+        query["place.uuid"] = {$in:place_uuids}
+    }
     const count = await Customer.countDocuments()
     console.log('model', appConfig.model)
     Customer.find(query).limit(+page_size).skip(skip_records)

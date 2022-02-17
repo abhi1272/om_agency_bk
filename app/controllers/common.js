@@ -11,7 +11,7 @@ let readModel = async (req, res) => {
 
     console.log(req.params, appConfig.model)
 
-    Model[appConfig.model].find({uuid:req.params.id})
+    Model[appConfig.model].find({$or:[{name:decodeURIComponent(req.params.id)},{uuid:req.params.id}]})
         .exec((err, result) => {
             if (err) {
                 logger.error('some error occurred', `${appConfig.model} : readModel`, 10);
@@ -80,9 +80,9 @@ let readModelByFilter = async (req, res) => {
             } else {
                 let apiResponse = response.generate(false, `${appConfig.model} found`, 200, result);
                 apiResponse.total = count
-                if(Model[appConfig.model]){
-                    apiResponse.paths = Model[appConfig.model].schema.paths
-                }
+                // if(Model[appConfig.model]){
+                //     apiResponse.paths = Model[appConfig.model].schema.paths
+                // }
                 res.send(apiResponse);
             }
         }

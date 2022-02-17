@@ -54,9 +54,6 @@ let userSchema = new Schema({
   address:[{
     type:Object
   }],
-  orders:[{
-    type:Object
-  }],
   tokens:[{
     token:{
       type:String,
@@ -70,6 +67,14 @@ let userSchema = new Schema({
   roleName:{
     type:String,
     default:'User'
+  },
+  place:{
+    type:[
+      {
+        name: String,
+        uuid: String
+      }
+    ]
   },
   orgId:{
     type: String,
@@ -112,9 +117,9 @@ userSchema.methods.generateAuthToken = async function(){
 
 };
 
-userSchema.statics.findByCredentials = async (email,password) => {
+userSchema.statics.findByCredentials = async (email,password,orgId) => {
 
-  let foundUSer = await User.findOne({email});
+  let foundUSer = await User.findOne({email,orgId});
   if(!foundUSer){
     return 'No User Found'
   }

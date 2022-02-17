@@ -3,7 +3,6 @@ const Customer = require('../models/Customer');
 const response = require('../libs/responseLib');
 const common = require('../services/common.js')
 const { uuid } = require('uuidv4');
-
 let create = async (req,res) => {
 
     let newBill = new Bill({
@@ -30,7 +29,13 @@ let create = async (req,res) => {
         res.send(apiResponse);
 
     }catch(e){
-        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        let message = ''
+        if(e.code === 11000){
+            message = `Duplicate bill ${e.keyValue.bill_no} can not be added`
+        }else{
+            message = 'some error occurred'
+        }
+        let apiResponse = response.generate(true, message, 500, e);
         res.status('500').send(apiResponse);
     }
 };
@@ -118,6 +123,30 @@ let updateBill =  async (req,res) => {
     }
 };
 
+let verifyBill =  async (req,res) => {
+
+    try{
+        const bill_uuids = req.body.bill_uuids
+        
+        const result = await Bill.updateMany(
+            { uuid: {$in:bill_uuids} },
+            {
+              $set: {
+                  verify: true,
+              },
+            }
+          );
+
+        let apiResponse = response.generate(false, `Bill Verified Successfully`, 200, result);
+        res.send(apiResponse);
+
+    }catch(e){
+        let apiResponse = response.generate(true, 'some error occurred', 500, e);
+        res.status('500').send(apiResponse);
+    }
+};
+
+
 let deleteBill = async (req,res) => {
     
     let uuid = req.params.id;
@@ -146,5 +175,6 @@ module.exports = {
     getBill,
     updateBill,
     deleteBill,
-    getAllBills
+    getAllBills,
+    verifyBill
 };

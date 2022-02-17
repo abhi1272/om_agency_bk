@@ -10,8 +10,7 @@ module.exports.setRouter = (app) => {
     let baseUrl = `${appConfig.apiVersion}/user`;
 
     // defining routes.
-    app.get(`${baseUrl}`, common.readModelByFilter);
-
+    app.get(`${baseUrl}`,auth,common.readModelByFilter);
 
     // params: firstName, lastName, email, mobileNumber, password
     app.post(`${baseUrl}/signup`, userController.signUpFunction);

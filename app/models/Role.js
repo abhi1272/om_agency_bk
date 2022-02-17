@@ -1,13 +1,11 @@
 'use strict';
 /** Module Dependencies **/
-const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 let roleSchema = new Schema({
   uuid: {
     type: String,
-    default: uuidv4(),
     index: true,
     trim:true
   },
@@ -16,6 +14,10 @@ let roleSchema = new Schema({
     default: '',
     trim:true,
     required:true
+  },
+  orgId:{
+    type: String,
+    required: true
   },
   page:{
     type:{String}
