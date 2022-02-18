@@ -119,7 +119,7 @@ userSchema.methods.generateAuthToken = async function(){
 
 userSchema.statics.findByCredentials = async (email,password,orgId) => {
 
-  let foundUSer = await User.findOne({email,orgId});
+  let foundUSer = await User.findOne({email});
   if(!foundUSer){
     return 'No User Found'
   }
