@@ -160,6 +160,10 @@ let getAllPayment = async (req,res) => {
     if(req.query.type){
         filter['customer.type'] = req.query.type
     }
+    const place_uuids = req.loggedInUser.place.map(item => item.uuid)
+    if(place_uuids && place_uuids.length){
+        filter["customer.place.uuid"] = {$in:place_uuids}
+    }
     try{
         filter.orgId = req.loggedInUser.orgId
         const result = await PaymentModel.find(filter)

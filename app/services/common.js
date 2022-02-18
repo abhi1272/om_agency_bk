@@ -41,7 +41,10 @@ const getDataWithFilter = async (req, field, sortField, model) => {
     if(req.query.type){
       filterObj['customer.type'] = req.query.type
     }
-    console.log('model', model)
+    const place_uuids = req.loggedInUser.place.map(item => item.uuid)
+    if(place_uuids && place_uuids.length){
+      filterObj["customer.place.uuid"] = {$in:place_uuids}
+    }
   
     const result = await Model[model].find(filterObj).limit(limitSize).sort({[sortField] : -1})
     if (result) {

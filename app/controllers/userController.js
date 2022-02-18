@@ -110,14 +110,23 @@ let setToken = (res, user, token) => {
   });
 };
 
-let addAddress = async(req,res) => {
-    console.log(req.body)
-    try {
-      const result = await User.update({ email: req.body.email }, { $push: { address:req.body.address } });
-      res.send(result)
-    } catch (e) {
-      res.status("500").send(e);
-    }
+let addUser = async(req,res) => {
+    let user = User({
+        ...req.body,
+        orgId:req.loggedInUser.orgId,
+        uuid:uuidv4()
+    });
+
+    user.save((err, result) => {
+        if (err) {
+            console.log('err', err)
+            let apiResponse = response.generate(true, 'some error occurred', 500, err);
+            res.send(apiResponse);
+        } else {
+            let apiResponse = response.generate(true, `User saved successfully`, 200, result);
+            res.send(apiResponse);
+        }
+    });
    
 }
 
@@ -127,5 +136,5 @@ module.exports = {
     logout,
     getProfile,
     updateProfile,
-    addAddress
+    addUser
 }
