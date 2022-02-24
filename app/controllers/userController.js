@@ -131,26 +131,11 @@ let addUser = async(req,res) => {
    
 }
 
-let getUsers = async (req,res) => {
-
-    const orgId = req.loggedInUser.orgId
-
-    try{
-        let result = await User.find({roleName : 'User', orgId});
-        let apiResponse = response.generate(false, `User found`, 200, result);
-        res.send(apiResponse);
-    }catch(e){
-        let apiResponse = response.generate(true, 'some error occurred', 500, e);
-        res.status('500').send(apiResponse);
-    }
-};
-
 module.exports = {
     signUpFunction,
     loginFunction,
     logout,
     getProfile,
     updateProfile,
-    addUser,
-    getUsers
+    addUser
 }
