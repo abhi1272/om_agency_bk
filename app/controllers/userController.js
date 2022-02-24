@@ -132,8 +132,10 @@ let addUser = async(req,res) => {
 
 let getUsers = async (req,res) => {
 
+    const orgId = req.loggedInUser.orgId
+
     try{
-        let result = await User.find({roleName : 'User'});
+        let result = await User.find({roleName : 'User', orgId});
         let apiResponse = response.generate(false, `User found`, 200, result);
         res.send(apiResponse);
     }catch(e){
