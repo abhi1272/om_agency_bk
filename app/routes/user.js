@@ -9,7 +9,7 @@ module.exports.setRouter = (app) => {
 
     let baseUrl = `${appConfig.apiVersion}/user`;
 
-    app.get(`${baseUrl}`,auth,common.readModelByFilter);
+    app.get(`${baseUrl}`,auth,userController.getUsers);
 
     app.post(`${baseUrl}/signup`, userController.signUpFunction);
 
