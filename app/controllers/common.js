@@ -68,7 +68,7 @@ let readModelByFilter = async (req, res) => {
     }
 
     const count = await Model[appConfig.model].countDocuments()
-    Model[appConfig.model].find(query).limit(+page_size).skip(skip_records)
+    Model[appConfig.model].find(query, {_id:0,__v:0,orgId:0,createdAt:0,updatedAt:0}).limit(+page_size).skip(skip_records)
         .exec((err, result) => {
             if (err) {
                 logger.error('some error occurred', 'commonController : readModelByFilter', 10);
@@ -148,7 +148,7 @@ let updateModel = (req, res) => {
             let apiResponse = response.generate(true, `${appConfig.model} not found`, 500, null);
             res.send(apiResponse);
         } else {
-            let apiResponse = response.generate(false, `${appConfig.model} updated successfully ${req.params.Batch}`, 200, result);
+            let apiResponse = response.generate(false, `${appConfig.model} updated successfully ${req.params.uuid}`, 200, result);
             res.send(apiResponse);
         }
     });

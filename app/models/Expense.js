@@ -1,9 +1,25 @@
-const mongoose = require('mongoose');
-const expenseSchema = new mongoose.Schema([
+const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
+
+const expenseSchema = new mongoose.Schema(
   {
-    type: { type: String, require: true, unique: false, default: '' },
-    amount: { type: Number, require: true, unique: false, default: '' },
-    date: { type: String, require: true, unique: false, default: '' }
+    uuid: {
+      type: String,
+      default: uuidv4(),
+    },
+    type: {
+      type: Object,
+      require: true,
+    },
+    amount: { type: Number, require: true },
+    date: { type: Date, require: true },
+    orgId: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
   }
-]);
-module.exports = mongoose.model('Expense',expenseSchema);
+);
+
+module.exports = mongoose.model("Expense", expenseSchema);

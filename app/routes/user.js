@@ -23,7 +23,7 @@ module.exports.setRouter = (app) => {
 
     app.patch(`${baseUrl}/profile`, userController.updateProfile);
 
-    app.put(`${baseUrl}/:id`, common.updateModel);
+    app.patch(`${baseUrl}/:id`, common.updateModel);
 
     app.delete(`${baseUrl}/:id`, common.deleteModel);
 
